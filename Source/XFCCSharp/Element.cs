@@ -1,6 +1,6 @@
 #pragma warning disable CA1051
 
-namespace XFCC;
+namespace XFCCSharp;
 
 /// <summary>
 /// Represents an X-Forwarded-Client-Cert Element.
