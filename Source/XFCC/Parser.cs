@@ -1,26 +1,26 @@
 namespace XFCC;
 using System.Text;
 
-///<Summary>
+/// <Summary>
 /// Parses a X-Forwarded-Client-Cert string into a XFCC.
-///</Summary>
+/// </Summary>
 public class Parser
 {
     private readonly char[] buf;
     private int marker;
 
-    ///<Summary>
+    /// <Summary>
     /// Initializes a Parser
-    ///</Summary>
+    /// </Summary>
     public Parser(string input)
     {
         this.buf = input.ToCharArray();
         this.marker = 0;
     }
 
-    ///<Summary>
+    /// <Summary>
     /// Parses the string used to construct this instance into an XFCC.
-    ///</Summary>
+    /// </Summary>
     public Value Parse()
     {
         var thisValue = new Value();
@@ -52,7 +52,7 @@ public class Parser
             else if (next == Tokens.Comma)
             {
                 this.Read();
-                thisValue.Elements.Append(elementBuilder.Build());
+                thisValue.Elements = (List<Element>)thisValue.Elements.Append(elementBuilder.Build());
                 elementBuilder.Reset();
             }
         }
@@ -67,14 +67,15 @@ public class Parser
         public static readonly char Semicolon = ";".ToCharArray()[0];
         public static readonly char Backslash = "\\".ToCharArray()[0];
         public static readonly char Doublequote = "\"".ToCharArray()[0];
+        #pragma warning disable CA1805
         public static readonly char Eof = (char)0; // technically nul char, but good enough
-        public static readonly char AValue = "a".ToCharArray()[0];
-        public static readonly char ZValue = "z".ToCharArray()[0];
+        public static readonly char a = "a".ToCharArray()[0];
+        public static readonly char z = "z".ToCharArray()[0];
         public static readonly char A = "A".ToCharArray()[0];
         public static readonly char Z = "Z".ToCharArray()[0];
     }
 
-    private static bool IsIdent(char c) => (c >= Tokens.AValue && c <= Tokens.ZValue) || (c >= Tokens.A && c <= Tokens.Z);
+    private static bool IsIdent(char c) => (c >= Tokens.a && c <= Tokens.z) || (c >= Tokens.A && c <= Tokens.Z);
 
     private static bool IsDelimiter(char c) => c == Tokens.Semicolon || c == Tokens.Comma || c == Tokens.Equals;
 

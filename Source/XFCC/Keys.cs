@@ -1,45 +1,45 @@
 namespace XFCC;
 
-///<Summary>
+/// <Summary>
 /// Valid Keys for an XFCC Element.
-///</Summary>
-public static class Keys
+/// </Summary>
+internal static class Keys
 {
-    ///<Summary>
+    /// <Summary>
     /// The Subject Alternative Name (URI type) of the current proxy’s certificate. The current proxy’s certificate may
     /// contain multiple URI type Subject Alternative Names, each will be a separate key-value pair.
-    ///</Summary>
+    /// </Summary>
     public static readonly string By = "By";
 
-    ///<Summary>
+    /// <Summary>
     /// The SHA 256 digest of the current client certificate.
-    ///</Summary>
+    /// </Summary>
     public static readonly string Hash = "Hash";
 
-    ///<Summary>
+    /// <Summary>
     /// The entire client certificate in URL encoded PEM format.
-    ///</Summary>
+    /// </Summary>
     public static readonly string Cert = "Cert";
 
-    ///<Summary>
+    /// <Summary>
     /// The entire client certificate chain (including the leaf certificate) in URL encoded PEM format.
-    ///</Summary>
+    /// </Summary>
     public static readonly string Chain = "Chain";
 
-    ///<Summary>
+    /// <Summary>
     /// The Subject field of the current client certificate. The value is always double-quoted.
-    ///</Summary>
+    /// </Summary>
     public static readonly string Subject = "Subject";
 
-    ///<Summary>
+    /// <Summary>
     /// The URI type Subject Alternative Name field of the current client certificate. A client certificate may contain
     /// multiple URI type Subject Alternative Names, each will be a separate key-value pair.
-    ///</Summary>
+    /// </Summary>
     public static readonly string URI = "URI";
 
-    ///<Summary>
+    /// <Summary>
     /// The DNS type Subject Alternative Name field of the current client certificate. A client certificate may contain
     /// multiple DNS type Subject Alternative Names, each will be a separate key-value pair.
-    ///</Summary>
+    /// </Summary>
     public static readonly string DNS = "DNS";
 }

@@ -1,12 +1,14 @@
+#pragma warning disable CA1051
+
 namespace XFCC;
 
-///<Summary>
+/// <Summary>
 /// Represents an X-Forwarded-Client-Cert Header Value
-///</Summary>
+/// </Summary>
 public class Value
 {
-    ///<Summary>
+    /// <Summary>
     /// Contains the X-Forwarded-Client-Cert Elements contained in this X-Forwarded-Client-Cert Header Value
-    ///</Summary>
+    /// </Summary>
     public List<Element> Elements = new();
 }
