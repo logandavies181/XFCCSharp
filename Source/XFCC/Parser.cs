@@ -1,26 +1,26 @@
 namespace XFCC;
 using System.Text;
 
-/// <Summary>
+/// <summary>
 /// Parses a X-Forwarded-Client-Cert string into a XFCC.
-/// </Summary>
+/// </summary>
 public class Parser
 {
     private readonly char[] buf;
     private int marker;
 
-    /// <Summary>
+    /// <summary>
     /// Initializes a Parser
-    /// </Summary>
+    /// </summary>
     public Parser(string input)
     {
         this.buf = input.ToCharArray();
         this.marker = 0;
     }
 
-    /// <Summary>
+    /// <summary>
     /// Parses the string used to construct this instance into an XFCC.
-    /// </Summary>
+    /// </summary>
     public Value Parse()
     {
         var thisValue = new Value();

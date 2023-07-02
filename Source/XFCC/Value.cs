@@ -2,13 +2,13 @@
 
 namespace XFCC;
 
-/// <Summary>
+/// <summary>
 /// Represents an X-Forwarded-Client-Cert Header Value
-/// </Summary>
+/// </summary>
 public class Value
 {
-    /// <Summary>
+    /// <summary>
     /// Contains the X-Forwarded-Client-Cert Elements contained in this X-Forwarded-Client-Cert Header Value
-    /// </Summary>
+    /// </summary>
     public List<Element> Elements = new();
 }

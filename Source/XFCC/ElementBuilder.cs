@@ -1,23 +1,23 @@
 namespace XFCC;
 
-/// <Summary>
+/// <summary>
 /// Helps build an Element, ensuring that keys are specified exactly once and no unexpected keys are supplied. TODO:
-/// </Summary>
+/// </summary>
 internal sealed class ElementBuilder
 {
     private Dictionary<string, string> element = new();
 
-    /// <Summary>
+    /// <summary>
     /// Add a Key-Value pair
-    /// </Summary>
+    /// </summary>
     public void Add(string key, string value) =>
 
         // TODO: raise exception if unknown key
         this.element.Add(key, value);
 
-    /// <Summary>
+    /// <summary>
     /// Construct an Element with the current keys and values.
-    /// </Summary>
+    /// </summary>
     public Element Build() => new(
                 this.element.GetValueOrDefault(Keys.By),
                 this.element.GetValueOrDefault(Keys.Hash),
@@ -27,8 +27,8 @@ internal sealed class ElementBuilder
                 this.element.GetValueOrDefault(Keys.URI),
                 this.element.GetValueOrDefault(Keys.DNS));
 
-    /// <Summary>
+    /// <summary>
     /// Reset to start building a new Element.
-    /// </Summary>
+    /// </summary>
     public void Reset() => this.element = new Dictionary<string, string>();
 }
