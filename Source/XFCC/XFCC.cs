@@ -8,35 +8,38 @@ namespace XFCC;
 public class Parser
 {
     private int marker;
-    private byte[] buf;
+    private char[] buf;
 
     private static class Tokens
     {
-        public static readonly int equals = (int)"="[0];
-        public static readonly int comma = (int)","[0];
-        public static readonly int semicolon = (int)";"[0];
-        public static readonly int backslash = (int)"\\"[0];
-        public static readonly int doublequote = (int)"\""[0];
-        public static readonly int eof = -1;
-        public static readonly int a = (int)"a"[0];
-        public static readonly int z = (int)"z"[0];
-        public static readonly int A = (int)"A"[0];
-        public static readonly int Z = (int)"Z"[0];
+        public static readonly char equals = "=".ToCharArray()[0];
+        public static readonly char comma = ",".ToCharArray()[0];
+        public static readonly char semicolon = ";".ToCharArray()[0];
+        public static readonly char backslash = "\\".ToCharArray()[0];
+        public static readonly char doublequote = "\"".ToCharArray()[0];
+        public static readonly char eof = (char)0; // technically nul char, but good enough
+        public static readonly char a = "a".ToCharArray()[0];
+        public static readonly char z = "z".ToCharArray()[0];
+        public static readonly char A = "A".ToCharArray()[0];
+        public static readonly char Z = "Z".ToCharArray()[0];
     }
 
     ///
     public Parser(string input)
     {
-        buf = Encoding.ASCII.GetBytes(input);
+        buf = input.ToCharArray();
         marker = 0;
     }
 
     ///
     public Value parse()
     {
+        var thisValue = new Value();
+        var elementBuilder = new ElementBuilder();
+
         while (true)
         {
-            int next = this.read();
+            char next = read();
             if (next == Tokens.eof)
             {
                 break;
@@ -44,7 +47,23 @@ public class Parser
             else if (isIdent(next))
             {
                 unread();
-                var ident = this.readIdent();
+                var ident = readIdent();
+
+                // TODO: throw if not an equals
+                read();
+
+                var value = readValue();
+
+                elementBuilder.add(ident, value);
+            }
+            else if (next == Tokens.semicolon)
+            {
+                // empty value?? maybe throw here
+            }
+            else if (next == Tokens.comma)
+            {
+                thisValue.elements.Append(elementBuilder.build());
+                elementBuilder.reset();
             }
         }
 
@@ -53,38 +72,97 @@ public class Parser
 
     private string readIdent()
     {
-        var sb = new StringBuilder()
+        var sb = new StringBuilder();
 
         while (true)
         {
-            int next = this.read();
-            if (next == Tokens.eof)
+            char next = read();
+            if (isIdent(next))
             {
-                break;
+                sb.Append(next.ToString());
             }
-            else if (isIdent(next))
+            else
             {
                 unread();
-                var ident = this.readIdent();
+                break;
             }
         }
 
         return sb.ToString();
     }
 
-    private bool isIdent(int c)
+    private bool isIdent(char c)
     {
         return (c >= Tokens.a && c <= Tokens.z) || (c >= Tokens.A && c <= Tokens.Z);
     }
 
-    private int read()
+    private string readValue()
+    {
+        var sb = new StringBuilder();
+        bool inQuotes = false;
+
+        while (true)
+        {
+            char next = read();
+            if (next == Tokens.eof)
+            {
+                this.unread();
+                break;
+            }
+            else if (next == Tokens.doublequote)
+            {
+                // Assume this is the end of the value
+                // TODO: check next value and throw if not semicolon or comma
+                if (inQuotes)
+                {
+                    break;
+                }
+
+                inQuotes = true;
+            }
+            else if (next == Tokens.backslash)
+            {
+                // Assume only doublequotes can be escaped - spec is unclear here
+                // TODO: always discarding the backslash is probably not correct but
+                // there is no formal spec.
+
+                char nextNext = read();
+                if (nextNext == Tokens.doublequote) {
+                    sb.Append(nextNext);
+                }
+            }
+            else if (isDelimiter(next))
+            {
+                if (!inQuotes)
+                {
+                    unread();
+                    break;
+                }
+
+                sb.Append(next);
+            }
+            else
+            {
+                sb.Append(next);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private bool isDelimiter(char c)
+    {
+        return (c == Tokens.semicolon || c == Tokens.comma || c == Tokens.equals);
+    }
+
+    private char read()
     {
         if (marker == buf.Length)
         {
             return Tokens.eof;
         }
 
-        int ret = buf[marker];
+        char ret = buf[marker];
         marker++;
 
         return ret;
@@ -95,9 +173,9 @@ public class Parser
         marker--;
     }
 
-    private int peek()
+    private char peek()
     {
-        int ret = this.read();
+        char ret = this.read();
         this.unread();
         return ret;
     }
