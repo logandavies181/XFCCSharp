@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Project References">
-    <ProjectReference Include="..\..\Source\XFCCSharp\XFCCSharp.csproj" />
+    <ProjectReference Include="..\..\Source\XFCCSharp\XForwardedClientCert.csproj" />
   </ItemGroup>
 
 </Project>
