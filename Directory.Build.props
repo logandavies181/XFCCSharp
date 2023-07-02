@@ -24,7 +24,7 @@
 
   <ItemGroup Label="Package References">
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" Version="17.6.40" />
-    <PackageReference Include="MinVer" PrivateAssets="all" Version="4.2.0" />
+    <PackageReference Include="MinVer" PrivateAssets="all" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
