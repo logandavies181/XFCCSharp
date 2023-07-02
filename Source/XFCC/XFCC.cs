@@ -1,34 +1,70 @@
 namespace XFCC;
 using System.Text;
 
+///<Summary>
+/// Valid Keys for an XFCC Element
+///</Summary>
 public static class Keys
 {
+    ///<Summary>
+    /// The Subject Alternative Name (URI type) of the current proxy’s certificate. The current proxy’s certificate may
+    /// contain multiple URI type Subject Alternative Names, each will be a separate key-value pair.
+    ///</Summary>
     public static readonly string By = "By";
 
+    ///<Summary>
+    /// The SHA 256 digest of the current client certificate.
+    ///</Summary>
     public static readonly string Hash = "Hash";
 
+    ///<Summary>
+    /// The entire client certificate in URL encoded PEM format.
+    ///</Summary>
     public static readonly string Cert = "Cert";
 
+    ///<Summary>
+    /// The entire client certificate chain (including the leaf certificate) in URL encoded PEM format.
+    ///</Summary>
     public static readonly string Chain = "Chain";
 
+    ///<Summary>
+    /// The Subject field of the current client certificate. The value is always double-quoted.
+    ///</Summary>
     public static readonly string Subject = "Subject";
 
+    ///<Summary>
+    /// The URI type Subject Alternative Name field of the current client certificate. A client certificate may contain
+    /// multiple URI type Subject Alternative Names, each will be a separate key-value pair.
+    ///</Summary>
     public static readonly string URI = "URI";
 
+    ///<Summary>
+    /// The DNS type Subject Alternative Name field of the current client certificate. A client certificate may contain
+    /// multiple DNS type Subject Alternative Names, each will be a separate key-value pair.
+    ///</Summary>
     public static readonly string DNS = "DNS";
 }
 
+///<Summary>
+/// Parses a X-Forwarded-Client-Cert string into a XFCC.
+///</Summary>
 public class Parser
 {
     private readonly char[] buf;
     private int marker;
 
+    ///<Summary>
+    /// Initializes a Parser
+    ///</Summary>
     public Parser(string input)
     {
         this.buf = input.ToCharArray();
         this.marker = 0;
     }
 
+    ///<Summary>
+    /// Parses the string used to construct this instance into an XFCC.
+    ///</Summary>
     public Value Parse()
     {
         var thisValue = new Value();
@@ -36,14 +72,13 @@ public class Parser
 
         while (true)
         {
-            var next = this.Read();
+            var next = this.Peek();
             if (next == Tokens.Eof)
             {
                 break;
             }
             else if (IsIdent(next))
             {
-                this.Unread();
                 var ident = this.ReadIdent();
 
                 // TODO: throw if not an equals
@@ -56,15 +91,18 @@ public class Parser
             else if (next == Tokens.Semicolon)
             {
                 // empty value?? maybe throw here
+
+                this.Read();
             }
             else if (next == Tokens.Comma)
             {
+                this.Read();
                 thisValue.Elements.Append(elementBuilder.Build());
                 elementBuilder.Reset();
             }
         }
 
-        return new Value();
+        return thisValue;
     }
 
     private static class Tokens
@@ -173,30 +211,74 @@ public class Parser
         return ret;
     }
 
+    private char Peek()
+    {
+        var ret = this.Read();
+        this.Unread();
+
+        return ret;
+    }
+
     private void Unread() => this.marker--;
 }
 
+///<Summary>
+/// Represents an X-Forwarded-Client-Cert Header Value
+///</Summary>
 public class Value
 {
+    ///<Summary>
+    /// Contains the X-Forwarded-Client-Cert Elements contained in this X-Forwarded-Client-Cert Header Value
+    ///</Summary>
     public List<Element> Elements = new();
 }
 
+///<Summary>
+/// Represents an X-Forwarded-Client-Cert Element
+///</Summary>
 public class Element
 {
+    ///<Summary>
+    /// The Subject Alternative Name (URI type) of the current proxy’s certificate. The current proxy’s certificate may
+    /// contain multiple URI type Subject Alternative Names, each will be a separate key-value pair.
+    ///</Summary>
     public readonly string? By;
 
+    ///<Summary>
+    /// The SHA 256 digest of the current client certificate.
+    ///</Summary>
     public readonly string? Hash;
 
+    ///<Summary>
+    /// The entire client certificate in URL encoded PEM format.
+    ///</Summary>
     public readonly string? Cert;
 
+    ///<Summary>
+    /// The entire client certificate chain (including the leaf certificate) in URL encoded PEM format.
+    ///</Summary>
     public readonly string? Chain;
 
+    ///<Summary>
+    /// The Subject field of the current client certificate. The value is always double-quoted.
+    ///</Summary>
     public readonly string? Subject;
 
+    ///<Summary>
+    /// The URI type Subject Alternative Name field of the current client certificate. A client certificate may contain
+    /// multiple URI type Subject Alternative Names, each will be a separate key-value pair.
+    ///</Summary>
     public readonly string? URI;
 
+    ///<Summary>
+    /// The DNS type Subject Alternative Name field of the current client certificate. A client certificate may contain
+    /// multiple DNS type Subject Alternative Names, each will be a separate key-value pair.
+    ///</Summary>
     public readonly string? DNS;
 
+    ///<Summary>
+    /// Constructs an X-Forwarded-Client-Cert Element
+    ///</Summary>
     public Element(string? by, string? hash, string? cert, string? chain, string? subject, string? uRI, string? dNS)
     {
         this.By = by;
@@ -208,15 +290,24 @@ public class Element
     }
 }
 
+///<Summary>
+/// Helps build an Element, ensuring that keys are specified exactly once and no unexpected keys are supplied. TODO:
+///</Summary>
 public class ElementBuilder
 {
     private Dictionary<string, string> element = new();
 
+    ///<Summary>
+    /// Add a Key-Value pair
+    ///</Summary>
     public void Add(string key, string value) =>
 
         // TODO: raise exception if unknown key
         this.element.Add(key, value);
 
+    ///<Summary>
+    /// Construct an Element with the current keys and values.
+    ///</Summary>
     public Element Build() => new(
                 this.element.GetValueOrDefault(Keys.By),
                 this.element.GetValueOrDefault(Keys.Hash),
@@ -226,5 +317,8 @@ public class ElementBuilder
                 this.element.GetValueOrDefault(Keys.URI),
                 this.element.GetValueOrDefault(Keys.DNS));
 
+    ///<Summary>
+    /// Reset to start building a new Element.
+    ///</Summary>
     public void Reset() => this.element = new Dictionary<string, string>();
 }
