@@ -1,1 +1,13 @@
-XFCCSharp.csproj
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Build">
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <Product>XForwardedClientCert</Product>
+    <Description>Parse X-Forwarded-Client-Cert headers from Envoy</Description>
+    <PackageTags>X-Forwarded-Client-Cert,Envoy,Istio</PackageTags>
+  </PropertyGroup>
+
+</Project>
