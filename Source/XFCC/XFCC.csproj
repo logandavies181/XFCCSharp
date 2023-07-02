@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <Product>X-Forwarded-Client-Cert</Product>
+    <Product>XFCCSharp</Product>
     <Description>Parse X-Forwarded-Client-Cert headers from Envoy</Description>
     <PackageTags>X-Forwarded-Client-Cert,Envoy,Istio</PackageTags>
   </PropertyGroup>
