@@ -1,89 +1,104 @@
-using System.Collections.Generic;
+namespace XFCC;
 using System.Text;
 
-namespace XFCC;
+public static class Keys
+{
+    public static readonly string By = "By";
 
+    public static readonly string Hash = "Hash";
 
-///
+    public static readonly string Cert = "Cert";
+
+    public static readonly string Chain = "Chain";
+
+    public static readonly string Subject = "Subject";
+
+    public static readonly string URI = "URI";
+
+    public static readonly string DNS = "DNS";
+}
+
 public class Parser
 {
+    private readonly char[] buf;
     private int marker;
-    private char[] buf;
 
-    private static class Tokens
-    {
-        public static readonly char equals = "=".ToCharArray()[0];
-        public static readonly char comma = ",".ToCharArray()[0];
-        public static readonly char semicolon = ";".ToCharArray()[0];
-        public static readonly char backslash = "\\".ToCharArray()[0];
-        public static readonly char doublequote = "\"".ToCharArray()[0];
-        public static readonly char eof = (char)0; // technically nul char, but good enough
-        public static readonly char a = "a".ToCharArray()[0];
-        public static readonly char z = "z".ToCharArray()[0];
-        public static readonly char A = "A".ToCharArray()[0];
-        public static readonly char Z = "Z".ToCharArray()[0];
-    }
-
-    ///
     public Parser(string input)
     {
-        buf = input.ToCharArray();
-        marker = 0;
+        this.buf = input.ToCharArray();
+        this.marker = 0;
     }
 
-    ///
-    public Value parse()
+    public Value Parse()
     {
         var thisValue = new Value();
         var elementBuilder = new ElementBuilder();
 
         while (true)
         {
-            char next = read();
-            if (next == Tokens.eof)
+            var next = this.Read();
+            if (next == Tokens.Eof)
             {
                 break;
             }
-            else if (isIdent(next))
+            else if (IsIdent(next))
             {
-                unread();
-                var ident = readIdent();
+                this.Unread();
+                var ident = this.ReadIdent();
 
                 // TODO: throw if not an equals
-                read();
+                this.Read();
 
-                var value = readValue();
+                var value = this.ReadValue();
 
-                elementBuilder.add(ident, value);
+                elementBuilder.Add(ident, value);
             }
-            else if (next == Tokens.semicolon)
+            else if (next == Tokens.Semicolon)
             {
                 // empty value?? maybe throw here
             }
-            else if (next == Tokens.comma)
+            else if (next == Tokens.Comma)
             {
-                thisValue.elements.Append(elementBuilder.build());
-                elementBuilder.reset();
+                thisValue.Elements.Append(elementBuilder.Build());
+                elementBuilder.Reset();
             }
         }
 
         return new Value();
     }
 
-    private string readIdent()
+    private static class Tokens
+    {
+        public static new readonly char Equals = "=".ToCharArray()[0];
+        public static readonly char Comma = ",".ToCharArray()[0];
+        public static readonly char Semicolon = ";".ToCharArray()[0];
+        public static readonly char Backslash = "\\".ToCharArray()[0];
+        public static readonly char Doublequote = "\"".ToCharArray()[0];
+        public static readonly char Eof; // technically nul char, but good enough
+        public static readonly char AValue = "a".ToCharArray()[0];
+        public static readonly char ZValue = "z".ToCharArray()[0];
+        public static readonly char A = "A".ToCharArray()[0];
+        public static readonly char Z = "Z".ToCharArray()[0];
+    }
+
+    private static bool IsIdent(char c) => (c >= Tokens.AValue && c <= Tokens.ZValue) || (c >= Tokens.A && c <= Tokens.Z);
+
+    private static bool IsDelimiter(char c) => c == Tokens.Semicolon || c == Tokens.Comma || c == Tokens.Equals;
+
+    private string ReadIdent()
     {
         var sb = new StringBuilder();
 
         while (true)
         {
-            char next = read();
-            if (isIdent(next))
+            var next = this.Read();
+            if (IsIdent(next))
             {
-                sb.Append(next.ToString());
+                sb.Append(next);
             }
             else
             {
-                unread();
+                this.Unread();
                 break;
             }
         }
@@ -91,25 +106,20 @@ public class Parser
         return sb.ToString();
     }
 
-    private bool isIdent(char c)
-    {
-        return (c >= Tokens.a && c <= Tokens.z) || (c >= Tokens.A && c <= Tokens.Z);
-    }
-
-    private string readValue()
+    private string ReadValue()
     {
         var sb = new StringBuilder();
-        bool inQuotes = false;
+        var inQuotes = false;
 
         while (true)
         {
-            char next = read();
-            if (next == Tokens.eof)
+            var next = this.Read();
+            if (next == Tokens.Eof)
             {
-                this.unread();
+                this.Unread();
                 break;
             }
-            else if (next == Tokens.doublequote)
+            else if (next == Tokens.Doublequote)
             {
                 // Assume this is the end of the value
                 // TODO: check next value and throw if not semicolon or comma
@@ -120,22 +130,22 @@ public class Parser
 
                 inQuotes = true;
             }
-            else if (next == Tokens.backslash)
+            else if (next == Tokens.Backslash)
             {
                 // Assume only doublequotes can be escaped - spec is unclear here
                 // TODO: always discarding the backslash is probably not correct but
                 // there is no formal spec.
-
-                char nextNext = read();
-                if (nextNext == Tokens.doublequote) {
+                var nextNext = this.Read();
+                if (nextNext == Tokens.Doublequote)
+                {
                     sb.Append(nextNext);
                 }
             }
-            else if (isDelimiter(next))
+            else if (IsDelimiter(next))
             {
                 if (!inQuotes)
                 {
-                    unread();
+                    this.Unread();
                     break;
                 }
 
@@ -150,120 +160,71 @@ public class Parser
         return sb.ToString();
     }
 
-    private bool isDelimiter(char c)
+    private char Read()
     {
-        return (c == Tokens.semicolon || c == Tokens.comma || c == Tokens.equals);
-    }
-
-    private char read()
-    {
-        if (marker == buf.Length)
+        if (this.marker == this.buf.Length)
         {
-            return Tokens.eof;
+            return Tokens.Eof;
         }
 
-        char ret = buf[marker];
-        marker++;
+        var ret = this.buf[this.marker];
+        this.marker++;
 
         return ret;
     }
 
-    private void unread()
-    {
-        marker--;
-    }
-
-    private char peek()
-    {
-        char ret = this.read();
-        this.unread();
-        return ret;
-    }
+    private void Unread() => this.marker--;
 }
 
-///
-public class Value {
-    ///
-    public List<Element> elements = new List<Element>();
+public class Value
+{
+    public List<Element> Elements = new();
 }
 
-///
-public class Element {
-    ///
+public class Element
+{
     public readonly string? By;
-    ///
+
     public readonly string? Hash;
-    ///
+
     public readonly string? Cert;
-    ///
+
     public readonly string? Chain;
-    ///
+
     public readonly string? Subject;
-    ///
+
     public readonly string? URI;
-    ///
+
     public readonly string? DNS;
 
-    ///
-    public Element(string? By, string? Hash, string? Cert, string? Chain, string? Subject, string? URI, string? DNS)
+    public Element(string? by, string? hash, string? cert, string? chain, string? subject, string? uRI, string? dNS)
     {
-        this.By = By;
-        this.Hash = Hash;
-        this.Cert = Cert;
-        this.Chain = Chain;
-        this.Subject = Subject;
-        this.URI = URI;
+        this.By = by;
+        this.Hash = hash;
+        this.Cert = cert;
+        this.Chain = chain;
+        this.Subject = subject;
+        this.URI = uRI;
     }
 }
 
-///
 public class ElementBuilder
 {
-    ///
-    private Dictionary<string, string> element = new Dictionary<string, string>();
+    private Dictionary<string, string> element = new();
 
-    ///
-    public void add(string key, string value)
-    {
+    public void Add(string key, string value) =>
+
         // TODO: raise exception if unknown key
-        element.Add(key, value);
-    }
+        this.element.Add(key, value);
 
-    ///
-    public Element build()
-    {
-        return new Element(
-                element.GetValueOrDefault(Keys.By),
-                element.GetValueOrDefault(Keys.Hash),
-                element.GetValueOrDefault(Keys.Cert),
-                element.GetValueOrDefault(Keys.Chain),
-                element.GetValueOrDefault(Keys.Subject),
-                element.GetValueOrDefault(Keys.URI),
-                element.GetValueOrDefault(Keys.DNS)
-                );
-    }
+    public Element Build() => new(
+                this.element.GetValueOrDefault(Keys.By),
+                this.element.GetValueOrDefault(Keys.Hash),
+                this.element.GetValueOrDefault(Keys.Cert),
+                this.element.GetValueOrDefault(Keys.Chain),
+                this.element.GetValueOrDefault(Keys.Subject),
+                this.element.GetValueOrDefault(Keys.URI),
+                this.element.GetValueOrDefault(Keys.DNS));
 
-    ///
-    public void reset()
-    {
-        element = new Dictionary<string, string>();
-    }
-}
-
-///
-public static class Keys {
-    ///
-    public static readonly string By = "By";
-    ///
-    public static readonly string Hash = "Hash";
-    ///
-    public static readonly string Cert = "Cert";
-    ///
-    public static readonly string Chain = "Chain";
-    ///
-    public static readonly string Subject = "Subject";
-    ///
-    public static readonly string URI = "URI";
-    ///
-    public static readonly string DNS = "DNS";
+    public void Reset() => this.element = new Dictionary<string, string>();
 }
