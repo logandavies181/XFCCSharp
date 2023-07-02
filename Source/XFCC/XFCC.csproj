@@ -7,7 +7,7 @@
   <PropertyGroup Label="Package">
     <Product>X-Forwarded-Client-Cert</Product>
     <Description>Parse X-Forwarded-Client-Cert headers from Envoy</Description>
-    <PackageTags>Tag1;Tag2;Tag3</PackageTags>
+    <PackageTags>X-Forwarded-Client-Cert,Envoy,Istio</PackageTags>
   </PropertyGroup>
 
 </Project>
