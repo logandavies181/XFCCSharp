@@ -72,7 +72,7 @@ jobs:
         run: dotnet nuget add source https://nuget.pkg.github.com/logandavies181/index.json --name GitHub --username logandavies181 --password ${{secrets.GITHUB_TOKEN}}
         shell: pwsh
       - name: "Dotnet NuGet Push"
-        run: dotnet nuget push .\*.nupkg --api-key ${{ github.token }} --source GitHub --skip-duplicate
+        run: dotnet nuget push .\XFCCSharp*.nupkg --api-key ${{ github.token }} --source GitHub --skip-duplicate
         shell: pwsh
 
   push-nuget:
@@ -81,7 +81,7 @@ jobs:
     if: github.event_name == 'release'
     environment:
       name: "NuGet"
-      url: https://www.nuget.org/packages/XFCCSharp
+      url: https://www.nuget.org/packages/XForwardedClientCert
     runs-on: windows-latest
     steps:
       - name: "Download Artefact"
@@ -90,7 +90,7 @@ jobs:
           name: "windows-latest"
       - name: "Dotnet NuGet Push"
         run: |
-          Get-ChildItem .\ -Filter *.nupkg |
+          Get-ChildItem .\ -Filter XForwardedClientCert*.nupkg |
           Where-Object { !$_.Name.Contains('preview') } |
           ForEach-Object { dotnet nuget push $_ --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}} }
         shell: pwsh
