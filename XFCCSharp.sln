@@ -55,8 +55,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{0555
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XForwardedClientCert", "Source\XFCCSharp\XForwardedClientCert.csproj", "{5A92A89D-1443-44DB-A15F-74F08AC24CEA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XFCCSharp", "Source\XFCCSharp\XFCCSharp.csproj", "{5A92A89D-1443-44DB-A15F-74F08AC24CEA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XFCCSharp.Test", "Tests\XFCCSharp.Test\XFCCSharp.Test.csproj", "{C02A4049-D22D-4F72-B60E-4D9D85C2C62B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{EFE1E5ED-D337-4874-82EC-D9FA0BC7D3AB}"
