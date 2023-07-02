@@ -1,4 +1,4 @@
-namespace XFCC;
+namespace XFCCSharp;
 
 /// <summary>
 /// Valid Keys for an XFCC Element.

@@ -1,4 +1,4 @@
-namespace XFCC;
+namespace XFCCSharp;
 
 /// <summary>
 /// Helps build an Element, ensuring that keys are specified exactly once and no unexpected keys are supplied. TODO:

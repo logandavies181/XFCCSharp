@@ -1,9 +1,9 @@
-namespace XFCC.Test;
+namespace XFCCSharp.Test;
 
-using XFCC;
+using XFCCSharp;
 using Xunit;
 
-public class XFCCTest
+public class XFCCSharpTest
 {
     // Test cases are examples from Envoy docs
     // https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/headers#x-forwarded-client-cert

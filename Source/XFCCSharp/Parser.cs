@@ -1,4 +1,4 @@
-namespace XFCC;
+namespace XFCCSharp;
 using System.Text;
 
 /// <summary>
