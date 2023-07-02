@@ -31,6 +31,8 @@ public class Parser
             var next = this.Peek();
             if (next == Tokens.Eof)
             {
+                thisValue.Elements.Add(elementBuilder.Build());
+                elementBuilder.Reset();
                 break;
             }
             else if (IsIdent(next))
@@ -52,7 +54,7 @@ public class Parser
             else if (next == Tokens.Comma)
             {
                 this.Read();
-                thisValue.Elements = (List<Element>)thisValue.Elements.Append(elementBuilder.Build());
+                thisValue.Elements.Add(elementBuilder.Build());
                 elementBuilder.Reset();
             }
         }
@@ -110,7 +112,6 @@ public class Parser
             var next = this.Read();
             if (next == Tokens.Eof)
             {
-                this.Unread();
                 break;
             }
             else if (next == Tokens.Doublequote)
